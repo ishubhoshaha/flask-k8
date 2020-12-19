@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: alb-ingress-controller-paybill
+  name: alb-ingress-controller-paybill
+  namespace: kube-system
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alb-ingress-controller-paybill
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: alb-ingress-controller-paybill
+    spec:
+      containers:
+        - name: alb-ingress-controller-paybill
+          args:
+            - --ingress-class=alb
+            - --cluster-name= sr-eks-cluster
+            - --aws-region= ap-southeast-1
+          image: docker.io/amazon/aws-alb-ingress-controller:v1.1.9
+      serviceAccountName: alb-ingress-controller-paybill
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: alb-ingress-controller-paybill
+  name: alb-ingress-controller-paybill
+rules:
+  - apiGroups:
+      - ""
+      - extensions
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - ingresses
+      - ingresses/status
+      - services
+    verbs:
+      - create
+      - get
+      - list
+      - update
+      - watch
+      - patch
+  - apiGroups:
+      - ""
+      - extensions
+    resources:
+      - nodes
+      - pods
+      - secrets
+      - services
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: alb-ingress-controller-paybill
+  name: alb-ingress-controller-paybill
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: alb-ingress-controller-paybill
+subjects:
+  - kind: ServiceAccount
+    name: alb-ingress-controller-paybill
+    namespace: kube-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: alb-ingress-controller-paybill
+  name: alb-ingress-controller-paybill
+  namespace: kube-system
