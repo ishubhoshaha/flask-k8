@@ -26,7 +26,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  python-example
-        image:  ishubhoshaha/python:1.0.0
+        image:  354285753755.dkr.ecr.ap-southeast-1.amazonaws.com/sr-flask-app:latest
         imagePullPolicy: Always
         resources:
           requests:
